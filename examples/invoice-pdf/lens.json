@@ -1,0 +1,370 @@
+{
+  "version": 2,
+  "pr": {
+    "repo": "example/ledgerly",
+    "number": 418,
+    "title": "feat(invoices): render invoice PDFs in an API job",
+    "head": "4be81c07d9a2f6e35b10c8d47e9a3f2c61d05b7e"
+  },
+  "generatedBy": {
+    "skill": "review-lens",
+    "role": "Lens writer",
+    "model": "hand-written example"
+  },
+  "triage": {
+    "files": 37,
+    "classes": [
+      { "kind": "logic", "label": "Logic", "files": 12 },
+      { "kind": "tests", "label": "Tests", "files": 8 },
+      { "kind": "generated", "label": "Generated client", "files": 9 },
+      { "kind": "prompts", "label": "Templates + fixtures", "files": 6 },
+      { "kind": "docs", "label": "Docs", "files": 2 }
+    ]
+  },
+  "title": "Invoice PDF",
+  "summary": "PDF generation moves from the Python worker to an API job. The worker only sends an invoice snapshot.",
+  "lanes": [
+    { "id": "worker", "title": "Python worker" },
+    { "id": "contract", "title": "Contract" },
+    { "id": "api", "title": "API (TypeScript)" },
+    { "id": "ext", "title": "Stores · vendors" }
+  ],
+  "nodes": [
+    {
+      "id": "FIN",
+      "lane": "worker",
+      "status": "changed",
+      "title": "finalize_invoice",
+      "text": "sends invoice_snapshot",
+      "summary": "Builds the invoice snapshot when an invoice is final and sends it with the event. It no longer renders or emails the PDF.",
+      "files": [
+        { "path": "worker/billing/finalize.py", "add": 64, "del": 212 }
+      ],
+      "inside": [
+        {
+          "name": "finalize_invoice()",
+          "path": "worker/billing/finalize.py",
+          "line": 41
+        },
+        {
+          "name": "_build_snapshot()",
+          "path": "worker/billing/finalize.py",
+          "line": 88
+        }
+      ]
+    },
+    {
+      "id": "GEN",
+      "lane": "worker",
+      "status": "removed",
+      "title": "PDF generator",
+      "summary": "The Python PDF generator. Its logic moved to the API renderer.",
+      "files": [
+        { "path": "worker/billing/pdf_generator.py", "add": 0, "del": 168 }
+      ]
+    },
+    {
+      "id": "SEND",
+      "lane": "worker",
+      "status": "removed",
+      "title": "Invoice email",
+      "summary": "The worker sent the PDF by email. The API job sends it now.",
+      "files": [{ "path": "worker/billing/mailer.py", "add": 0, "del": 57 }]
+    },
+    {
+      "id": "TPL",
+      "lane": "worker",
+      "status": "removed",
+      "title": "Invoice templates",
+      "summary": "Jinja templates of the invoice. Three templates now live next to the API renderer.",
+      "files": [
+        { "path": "worker/templates/invoice/base.html", "add": 0, "del": 94 },
+        {
+          "path": "worker/templates/invoice/line_items.html",
+          "add": 0,
+          "del": 61
+        }
+      ]
+    },
+    {
+      "id": "LIFE",
+      "lane": "worker",
+      "kind": "note",
+      "title": "Data lifetime",
+      "text": "Customer name, address and line items stay in jobs.payload until the PDF is stored. Then the job clears the payload."
+    },
+    {
+      "id": "SNAP",
+      "lane": "contract",
+      "status": "added",
+      "title": "InvoiceFinalized.snapshot",
+      "note": "+9 generated client files",
+      "summary": "New optional field on the finalized event: customer, address, line items, totals, currency and locale.",
+      "files": [
+        { "path": "packages/contracts/openapi.json", "add": 142, "del": 0 },
+        { "path": "packages/contracts/src/invoice.ts", "add": 38, "del": 0 }
+      ],
+      "inside": [
+        {
+          "name": "InvoiceSnapshotSchema",
+          "path": "packages/contracts/src/invoice.ts",
+          "line": 51
+        }
+      ]
+    },
+    {
+      "id": "HND",
+      "lane": "api",
+      "status": "changed",
+      "title": "onInvoiceFinalized",
+      "text": "adds 1 job in the invoice transaction",
+      "summary": "Adds one invoice_pdf job in the same transaction that marks the invoice final.",
+      "files": [
+        {
+          "path": "apps/api/src/invoices/invoices.service.ts",
+          "add": 71,
+          "del": 12
+        }
+      ],
+      "inside": [
+        {
+          "name": "onInvoiceFinalized()",
+          "path": "apps/api/src/invoices/invoices.service.ts",
+          "line": 203
+        }
+      ]
+    },
+    {
+      "id": "JOB",
+      "lane": "api",
+      "status": "added",
+      "expanded": true,
+      "title": "invoice-pdf job",
+      "note": "≤ 2 jobs per process · ≤ 3 runs per job",
+      "summary": "Renders one PDF per invoice on a lease. Order: render, store, email, mark done.",
+      "files": [
+        {
+          "path": "apps/api/src/jobs/invoice-pdf.job.ts",
+          "add": 286,
+          "del": 0
+        },
+        { "path": "apps/api/src/jobs/registry.ts", "add": 3, "del": 0 }
+      ],
+      "inside": [
+        {
+          "name": "claim()",
+          "path": "apps/api/src/jobs/invoice-pdf.job.ts",
+          "line": 58
+        },
+        {
+          "name": "run()",
+          "path": "apps/api/src/jobs/invoice-pdf.job.ts",
+          "line": 112
+        },
+        {
+          "name": "retryLater()",
+          "path": "apps/api/src/jobs/invoice-pdf.job.ts",
+          "line": 190
+        },
+        {
+          "name": "finish()",
+          "path": "apps/api/src/jobs/invoice-pdf.job.ts",
+          "line": 231
+        },
+        {
+          "name": "fail()",
+          "path": "apps/api/src/jobs/invoice-pdf.job.ts",
+          "line": 255
+        }
+      ],
+      "children": {
+        "label": "4 states",
+        "nodes": [
+          {
+            "id": "queued",
+            "title": "queued",
+            "tone": "neutral",
+            "summary": "Waits for a free slot. claim() takes up to 2 jobs per process.",
+            "inside": [
+              {
+                "name": "claim()",
+                "path": "apps/api/src/jobs/invoice-pdf.job.ts",
+                "line": 58
+              }
+            ]
+          },
+          {
+            "id": "rendering",
+            "title": "rendering",
+            "tone": "warn",
+            "mark": "bugPath",
+            "summary": "Holds a lease for 60 s. A render error or an expired lease puts the job back in the queue after 30 s, up to 3 runs.",
+            "inside": [
+              {
+                "name": "run()",
+                "path": "apps/api/src/jobs/invoice-pdf.job.ts",
+                "line": 112
+              },
+              {
+                "name": "retryLater()",
+                "path": "apps/api/src/jobs/invoice-pdf.job.ts",
+                "line": 190
+              }
+            ]
+          },
+          {
+            "id": "done",
+            "title": "done",
+            "tone": "ok",
+            "mark": "mayBreak",
+            "summary": "PDF stored, email sent, payload cleared. A crash after the email and before this step runs the job again and sends a second email.",
+            "inside": [
+              {
+                "name": "finish()",
+                "path": "apps/api/src/jobs/invoice-pdf.job.ts",
+                "line": 231
+              }
+            ]
+          },
+          {
+            "id": "failed",
+            "title": "failed",
+            "tone": "bad",
+            "summary": "Invoice deleted or 3 runs used. The invoice gets pdf_failed and the account owner gets an email.",
+            "inside": [
+              {
+                "name": "fail()",
+                "path": "apps/api/src/jobs/invoice-pdf.job.ts",
+                "line": 255
+              }
+            ]
+          }
+        ],
+        "edges": [
+          { "from": "queued", "to": "rendering", "label": "claim lease" },
+          { "from": "rendering", "to": "queued", "label": "retry after 30 s" },
+          { "from": "rendering", "to": "done", "label": "stored → emailed" },
+          { "from": "rendering", "to": "failed", "label": "deleted or 3 runs" }
+        ]
+      }
+    },
+    {
+      "id": "REN",
+      "lane": "api",
+      "status": "added",
+      "title": "PDF renderer",
+      "text": "template → PDF · 20 s timeout",
+      "note": "3 templates moved in",
+      "summary": "Renders the invoice template to a PDF with a 20 s timeout. Dates and amounts use the customer's locale.",
+      "files": [
+        {
+          "path": "apps/api/src/services/invoice-pdf/render.service.ts",
+          "add": 148,
+          "del": 0
+        },
+        {
+          "path": "apps/api/src/services/invoice-pdf/invoice.template.tsx",
+          "add": 121,
+          "del": 0
+        }
+      ],
+      "inside": [
+        {
+          "name": "renderInvoicePdf()",
+          "path": "apps/api/src/services/invoice-pdf/render.service.ts",
+          "line": 34
+        },
+        {
+          "name": "InvoiceDocument",
+          "path": "apps/api/src/services/invoice-pdf/invoice.template.tsx",
+          "line": 12
+        }
+      ]
+    },
+    {
+      "id": "DB",
+      "lane": "ext",
+      "kind": "store",
+      "status": "context",
+      "title": "jobs table",
+      "text": "type invoice_pdf",
+      "summary": "The existing jobs table. jobs.type is text, so the PR has no migration."
+    },
+    {
+      "id": "MAIL",
+      "lane": "ext",
+      "status": "changed",
+      "title": "Email",
+      "text": "mail.service · PDF attachment",
+      "summary": "Sends the invoice email with the PDF attached.",
+      "files": [
+        { "path": "apps/api/src/services/mail.service.ts", "add": 31, "del": 8 }
+      ]
+    },
+    {
+      "id": "S3",
+      "lane": "ext",
+      "kind": "store",
+      "status": "changed",
+      "title": "Object storage",
+      "text": "invoices/<id>.pdf",
+      "summary": "Stores the PDF under the invoice id. A second run overwrites the same key.",
+      "files": [
+        { "path": "apps/api/src/integrations/storage.ts", "add": 12, "del": 2 }
+      ]
+    }
+  ],
+  "edges": [
+    { "from": "FIN", "to": "SNAP" },
+    { "from": "SNAP", "to": "HND" },
+    { "from": "HND", "to": "JOB" },
+    { "from": "JOB", "to": "DB" },
+    { "from": "JOB", "to": "MAIL" },
+    { "from": "JOB", "to": "REN" },
+    { "from": "REN", "to": "S3" },
+    { "from": "FIN", "to": "GEN", "kind": "removed" },
+    { "from": "FIN", "to": "SEND", "kind": "removed" },
+    { "from": "GEN", "to": "REN", "kind": "moved", "label": "moved to API" },
+    { "from": "TPL", "to": "REN", "kind": "moved" }
+  ],
+  "decisions": [
+    {
+      "id": "d1",
+      "kind": "ownership",
+      "text": "PDF generation moves from the worker to the API. The worker only sends a snapshot. Right owner?",
+      "nodes": ["FIN", "JOB", "REN"],
+      "path": "worker/billing/finalize.py",
+      "line": 41
+    },
+    {
+      "id": "d2",
+      "kind": "state",
+      "text": "The email goes out before the job is marked done. A crash between the two steps sends the invoice twice.",
+      "nodes": ["JOB", "done", "MAIL"],
+      "path": "apps/api/src/jobs/invoice-pdf.job.ts",
+      "line": 231
+    },
+    {
+      "id": "d3",
+      "kind": "rollout",
+      "text": "A new worker on an old API drops the snapshot, so no PDF is made. Deploy the API first.",
+      "nodes": ["FIN", "SNAP", "HND"]
+    },
+    {
+      "id": "d4",
+      "kind": "behavior",
+      "text": "Dates and amounts now follow the customer's locale. The worker always used en-US.",
+      "nodes": ["REN"],
+      "path": "apps/api/src/services/invoice-pdf/render.service.ts",
+      "line": 34
+    },
+    {
+      "id": "d5",
+      "kind": "extract?",
+      "text": "The job writes its own lease SQL. jobs.service.ts owns leases for the other jobs. Move it there?",
+      "nodes": ["JOB", "rendering"],
+      "path": "apps/api/src/jobs/invoice-pdf.job.ts",
+      "line": 58
+    }
+  ]
+}
