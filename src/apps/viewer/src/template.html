@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>review-lens</title>
+<style>/*__CSS__*/</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="main">
+    <div class="top">
+      <div class="pr" id="head"></div>
+      <div class="tools">
+        <button class="ib" id="zout" type="button" title="Zoom out" aria-label="Zoom out">−</button>
+        <button class="ib" id="zin" type="button" title="Zoom in" aria-label="Zoom in">+</button>
+        <button class="ib" id="zfit" type="button" title="Fit" aria-label="Fit">⤢</button>
+        <button class="ib tog" id="toggle" type="button" title="Toggle sidebar" aria-label="Toggle sidebar">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="1.75" y="2.75" width="12.5" height="10.5" rx="2"/><path d="M10 3v10"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="viewport" id="vp">
+      <div class="stage" id="stage"></div>
+      <div class="legend">
+        <span><i class="l-new"></i>new</span>
+        <span><i class="l-changed"></i>changed</span>
+        <span><i class="l-moved"></i>moved</span>
+        <span><i class="l-removed"></i>removed</span>
+      </div>
+    </div>
+  </div>
+  <aside class="side"><div class="side-in" id="side"></div></aside>
+</div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="m-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk-flow" d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="m-removed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk-removed" d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="m-moved" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk-moved" d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="m-bug" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk-bug" d="M0,0 L10,5 L0,10 z"/></marker>
+  </defs>
+</svg>
+<script id="lens" type="application/json">__LENS_JSON__</script>
+<script>/*__JS__*/</script>
+</body>
+</html>
