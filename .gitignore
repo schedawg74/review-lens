@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+.turbo/
+
+# Cache directories
+.cache/
+
+# Environment files
+.env
+.env.*
+
+# Logs
+*.log
+
+# Coverage
+coverage/
+
+# Local files
+.tmp/
+.DS_Store
+.claude/settings.local.json
+.agents/settings.local.json
+
+# Package manager lockfiles (keep only pnpm-lock.yaml)
+package-lock.json
+yarn.lock

@@ -1,0 +1,27 @@
+{
+  "name": "review-lens-monorepo",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "node": ">=24.22.1",
+    "pnpm": ">=12.15.0"
+  },
+  "packageManager": "pnpm@12.15.0",
+  "scripts": {
+    "check": "biome check --write .",
+    "format": "biome check --write .",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "review-lens": "node src/apps/cli/dist/bin.js",
+    "screenshots": "node scripts/screenshots.mjs"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.15",
+    "turbo": "^2.11.10",
+    "typescript": "catalog:",
+    "ultracite": "8.0.1"
+  }
+}

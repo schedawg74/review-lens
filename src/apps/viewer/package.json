@@ -1,0 +1,29 @@
+{
+  "name": "@review-lens/viewer",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "Browser viewer of a review-lens artifact, built into one self-contained HTML template",
+  "exports": {
+    "./viewer.html": "./dist/viewer.html",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@review-lens/layout": "workspace:*",
+    "@review-lens/schema": "workspace:*"
+  },
+  "devDependencies": {
+    "@review-lens/tsconfig": "workspace:*",
+    "@types/node": "catalog:node24",
+    "esbuild": "0.28.2",
+    "tsrs": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsrs --noEmit",
+    "test": "vitest run"
+  }
+}

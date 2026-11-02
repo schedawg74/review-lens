@@ -1,0 +1,113 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "files": {
+    "ignoreUnknown": false,
+    "includes": [
+      "!**/dist",
+      "!**/.turbo",
+      "!**/.cache",
+      "!**/.claude",
+      "!examples/**/*.html"
+    ]
+  },
+  "extends": ["ultracite/biome/core", "ultracite/biome/vitest"],
+  "assist": {
+    "actions": {
+      "source": {
+        "useSortedKeys": "off",
+        "useSortedInterfaceMembers": "off",
+        "useSortedProperties": "off",
+        "useSortedPackageJson": "off"
+      }
+    }
+  },
+  "html": {
+    "assist": { "enabled": false },
+    "formatter": { "enabled": false },
+    "linter": { "enabled": false }
+  },
+  "linter": {
+    "rules": {
+      "style": {
+        "useNamingConvention": "off",
+        "noExportedImports": "off",
+        "noMagicNumbers": "off",
+        "useFilenamingConvention": "off",
+        "useConsistentTypeDefinitions": {
+          "level": "error",
+          "options": {
+            "style": "type"
+          }
+        },
+        "noIncrementDecrement": "off",
+        "useConsistentMethodSignatures": "off",
+        "useDestructuring": "off",
+        "useErrorCause": "off"
+      },
+      "performance": {
+        "noBarrelFile": "off",
+        "noAwaitInLoops": "off"
+      },
+      "suspicious": {
+        "noConsole": "error",
+        "noEqualsToNull": "off",
+        "noReturnAssign": "off",
+        "noUnnecessaryConditions": "off",
+        "noUnusedExpressions": "off",
+        "noEmptySource": "off"
+      },
+      "complexity": {
+        "useMaxParams": "error",
+        "noExcessiveCognitiveComplexity": {
+          "level": "error",
+          "options": { "maxAllowedComplexity": 15 }
+        },
+        "noRedundantDefaultExport": "off",
+        "noUselessCatchBinding": "off",
+        "noUselessReturn": "off"
+      },
+      "correctness": {
+        "useJsonImportAttributes": "error",
+        "noUndeclaredDependencies": "off",
+        "noUnusedInstantiation": "off"
+      },
+      "nursery": {
+        "noMisusedPromises": "error",
+        "useExhaustiveSwitchCases": "error"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["src/apps/viewer/src/sha256.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": { "noBitwiseOperators": "off" }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.{test,spec}.{ts,tsx,js,jsx}", "**/__tests__/**/*"],
+      "linter": {
+        "rules": {
+          "suspicious": { "noConsole": "off" }
+        }
+      }
+    },
+    {
+      "includes": [
+        "**/scripts/**/*",
+        "**/bin/**/*",
+        "**/src/bin.ts",
+        "*.mjs",
+        "*.cjs"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": { "noConsole": "off" },
+          "style": { "noProcessEnv": "off" }
+        }
+      }
+    }
+  ]
+}

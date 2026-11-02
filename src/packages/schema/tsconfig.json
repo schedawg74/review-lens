@@ -1,0 +1,14 @@
+{
+  "extends": "@review-lens/tsconfig/internal-package.json",
+  "compilerOptions": {
+    "lib": ["es2022"],
+    "module": "ESNext",
+    "target": "es2022",
+    "moduleResolution": "bundler",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "types": ["node"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
+}

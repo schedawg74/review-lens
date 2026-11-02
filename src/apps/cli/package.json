@@ -1,0 +1,35 @@
+{
+  "name": "@review-lens/cli",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "Command line tool of review-lens: facts, check, html",
+  "bin": {
+    "review-lens": "./dist/bin.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@review-lens/check": "workspace:*",
+    "@review-lens/schema": "workspace:*",
+    "@review-lens/viewer": "workspace:*",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@review-lens/tsconfig": "workspace:*",
+    "@types/node": "catalog:node24",
+    "esbuild": "0.28.2",
+    "tsrs": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "scripts": {
+    "build": "tsrs --noEmit && node scripts/build.mjs",
+    "dev": "tsx src/bin.ts",
+    "typecheck": "tsrs --noEmit",
+    "test": "vitest run"
+  }
+}

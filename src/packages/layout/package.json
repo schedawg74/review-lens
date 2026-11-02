@@ -1,0 +1,32 @@
+{
+  "name": "@review-lens/layout",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@review-lens/schema": "workspace:*"
+  },
+  "devDependencies": {
+    "@review-lens/tsconfig": "workspace:*",
+    "@types/node": "catalog:node24",
+    "tsrs": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "scripts": {
+    "build": "tsrs",
+    "typecheck": "tsrs --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  }
+}

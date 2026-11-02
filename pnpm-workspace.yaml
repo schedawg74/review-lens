@@ -1,0 +1,44 @@
+packages:
+  - src/apps/*
+  - src/packages/*
+  - src/tooling/*
+
+nodeLinker: hoisted
+linkWorkspacePackages: true
+# packageManager in package.json pins pnpm. Do not let pnpm manage that
+# version: it would add a second YAML document to pnpm-lock.yaml, which
+# GitHub's dependency graph (Dependabot alerts) and Turborepo do not read.
+pmOnFail: ignore
+
+# Supply-chain guards: https://pnpm.io/supply-chain-security
+# Resolve only versions that are at least 7 days old. This also blocks
+# security fixes (ERR_PNPM_NO_MATURE_MATCHING_VERSION). To install a younger
+# fix, add `minimumReleaseAgeExclude: [<pkg>@<version>]` and remove the entry
+# after 7 days.
+minimumReleaseAge: 10080
+# Fail when a package version has weaker publish trust than an earlier one.
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  # The npm name tsrs moved from its first owner (0.0.x, 2024) to the oxc
+  # project, which publishes from oxc-project/tsrs with trusted publishing
+  # and provenance. pnpm 12 reports that change of publisher as a takeover.
+  # Bump this entry together with the tsrs catalog version.
+  - tsrs@0.20.0-ts7.1.0-beta
+# Only direct dependencies may come from git or tarball URLs.
+blockExoticSubdeps: true
+
+catalog:
+  tsrs: 0.20.0-ts7.1.0-beta
+  tsx: 4.23.15
+  typescript: 7.0.2
+  vitest: ^5.0.5
+  zod: ^4.6.7
+
+catalogs:
+  node24:
+    '@types/node': ^24.19.2
+
+# Dependencies that may run install scripts. pnpm fails the install when a
+# dependency with a build script is not listed here.
+allowBuilds:
+  esbuild: true
